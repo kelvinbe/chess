@@ -5,7 +5,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 
@@ -30,89 +29,55 @@ model User {
 model Game {
   id String @id @default(uuid())
 
-
   whitePlayerId String?
   blackPlayerId String?
 
+  whitePlayer User? @relation("WhitePlayer", fields: [whitePlayerId], references: [id])
 
-  whitePlayer User? @relation(
-    "WhitePlayer",
-    fields: [whitePlayerId],
-    references: [id]
-  )
-
-
-  blackPlayer User? @relation(
-    "BlackPlayer",
-    fields: [blackPlayerId],
-    references: [id]
-  )
+  blackPlayer User? @relation("BlackPlayer", fields: [blackPlayerId], references: [id])
 
 
   status GameStatus @default(WAITING)
 
   currentTurn String @default("WHITE")
 
-
   fen String
 
-
   moves Move[]
-
 
   createdAt DateTime @default(now())
   finishedAt DateTime?
 }
 
 
-
 model Move {
-
   id String @id @default(uuid())
-
 
   gameId String
 
-  game Game @relation(
-    fields:[gameId],
-    references:[id]
-  )
-
+  game Game @relation(fields: [gameId], references: [id])
 
   playerId String
 
-  player User @relation(
-    fields:[playerId],
-    references:[id]
-  )
-
+  player User @relation(fields: [playerId], references: [id])
 
   from String
+
   to String
 
   notation String?
 
-
   moveNumber Int
 
-
   createdAt DateTime @default(now())
-
 }
 
 
 enum GameStatus {
-
   WAITING
-
   ACTIVE
-
   CHECKMATE
-
   DRAW
-
   RESIGNED
-
   FINISHED
-
 }
